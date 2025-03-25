@@ -1,12 +1,13 @@
 import daisyui from "daisyui";
+import flowbite from "flowbite-react/tailwind";
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./**.{js,jsx,ts,tsx}"],
+  content: ["./app/**/*.{js,ts,jsx,tsx,mdx}", flowbite.content()],
   theme: {
     extend: {},
   },
-  plugins: [daisyui],
+  plugins: [daisyui, flowbite.plugin()],
   daisyui: {
     themes: ["light", "dark"],
   },
