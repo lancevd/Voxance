@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useAuth } from "../context/authContext";
 import toast from "react-hot-toast";
+import Spinner from "../components/Spinner";
 
 const page = () => {
   const [formData, setFormData] = useState({
@@ -17,7 +18,7 @@ const page = () => {
       !formData.firstName.trim() ||
       !formData.lastName.trim() ||
       !formData.email.trim() ||
-      !formData.password
+      !formData.password.trim()
     ) {
       toast.error("Please fill all fields");
       return false;
@@ -43,6 +44,7 @@ const page = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validationComplete === true) {
+      console.log(formData);
       register(formData);
     } else {
       toast.error("Please fill all fields");
@@ -60,7 +62,7 @@ const page = () => {
             <form
               onSubmit={handleSubmit}
               className="space-y-4 md:space-y-6"
-              action="POST"
+              method="POST"
             >
               <div>
                 <label
@@ -70,7 +72,7 @@ const page = () => {
                   First Name
                 </label>
                 <input
-                  type="firstName"
+                  type="text"
                   name="firstName"
                   id="firstName"
                   onChange={(e) =>
@@ -89,7 +91,7 @@ const page = () => {
                   Last Name
                 </label>
                 <input
-                  type="lastName"
+                  type="text"
                   name="lastName"
                   id="lastName"
                   onChange={(e) =>
@@ -143,7 +145,8 @@ const page = () => {
                 type="submit"
                 className="w-full cursor-pointer text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
               >
-                Create an account
+                {/* {loading ? <Spinner /> : "Create an account"} */}
+                <Spinner/>
               </button>
               <p className="text-sm text-center font-light text-gray-500 dark:text-gray-400">
                 Already have an account? &nbsp;

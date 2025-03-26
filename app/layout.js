@@ -1,3 +1,4 @@
+import { Toaster } from "react-hot-toast";
 import NavBar from "./components/site/NavBar";
 import { AuthProvider } from "./context/authContext";
 import "./globals.css";
@@ -13,6 +14,7 @@ export default function RootLayout({ children }) {
       <body className="" data-theme="dark">
         <AuthProvider>
           <NavBar />
+          <Toaster />
           {children}
         </AuthProvider>
       </body>

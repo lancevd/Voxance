@@ -3,6 +3,7 @@ import { createContext, useContext, useState } from "react";
 import axios from "axios";
 import { axiosInstance } from "@/utils/axios";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 const AuthContext = createContext();
 
@@ -17,7 +18,6 @@ export const AuthProvider = ({ children }) => {
 
     try {
       const response = await axiosInstance.get(`/auth/check`);
-      console.log("RESPONSE RE OOO", response)
       if (response.status === 401) {
         router.push("/login");
         setLoading(false)
@@ -32,15 +32,17 @@ export const AuthProvider = ({ children }) => {
 
   const register =  async (data) => {
     setLoading(true);
-
     try {
       const response = await axiosInstance.post(`/auth/register`, data);
       console.log(response.data.message);
       setUser(response.data.user);
       setLoading(false);
+      toast.success(response.data.message);
+      router.push("/dashboard");
     } catch (error) {
       console.error(error);
       setLoading(false)
+      toast.error(error.response.data.message);
     }
   }
 

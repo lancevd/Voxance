@@ -9,7 +9,7 @@ export default function DashboardLayout({ children }) {
 
   useEffect(() => {
     checkUserLoggedIn();
-  }, [user]);
+  }, []);
   return (
     <div className="dashboard-layout">
       <AuthProvider>
