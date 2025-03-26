@@ -1,12 +1,14 @@
 // middleware.js
+import { NextResponse } from "next/server";
 
- const myMiddleware = (req, res) => {
-    // Middleware logic goes here
-    // You can modify the request or response objects, or perform any other operations
+export function middleware(request) {
+  const token = request.cookies.get("token");
+  if (!token) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+  return NextResponse.next();
+}
 
-    // Call next() to pass control to the next middleware or route handler
-    
+export const config = {
+  matcher: ["/dashboard/:path*"], // Only protect dashboard routes
 };
-
-// Export the middleware function
-export default myMiddleware;
