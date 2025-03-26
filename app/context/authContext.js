@@ -36,13 +36,13 @@ export const AuthProvider = ({ children }) => {
       const response = await axiosInstance.post(`/auth/register`, data);
       console.log(response.data.message);
       setUser(response.data.user);
-      setLoading(false);
       toast.success(response.data.message);
+      setLoading(false);
       router.push("/dashboard");
     } catch (error) {
       console.error(error);
-      setLoading(false)
       toast.error(error.response.data.message);
+      setLoading(false) 
     }
   }
 
