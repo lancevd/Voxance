@@ -1,7 +1,54 @@
+"use client";
 import Link from "next/link";
-import React from "react";
+import { useState } from "react";
+import { useAuth } from "../context/authContext";
+import toast from "react-hot-toast";
 
 const page = () => {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+  });
+
+  const validateForm = () => {
+    if (
+      !formData.firstName.trim() ||
+      !formData.lastName.trim() ||
+      !formData.email.trim() ||
+      !formData.password
+    ) {
+      toast.error("Please fill all fields");
+      return false;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      toast.error("Invalid email address");
+      return false;
+    }
+
+    if (formData.password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return false;
+    }
+
+    return true;
+  };
+
+  const validationComplete = validateForm();
+
+  const { register, loading } = useAuth();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (validationComplete === true) {
+      register(formData);
+    } else {
+      toast.error("Please fill all fields");
+    }
+  };
+
   return (
     <main className="bg-gray-50 dark:bg-gray-900">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
@@ -10,7 +57,11 @@ const page = () => {
             <h1 className="text-xl text-center font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
               Create an account
             </h1>
-            <form className="space-y-4 md:space-y-6" action="#">
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-4 md:space-y-6"
+              action="POST"
+            >
               <div>
                 <label
                   htmlFor="firstName"
@@ -22,9 +73,12 @@ const page = () => {
                   type="firstName"
                   name="firstName"
                   id="firstName"
+                  onChange={(e) =>
+                    setFormData({ ...formData, firstName: e.target.value })
+                  }
+                  value={formData.firstName}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="John"
-                  required
                 />
               </div>
               <div>
@@ -38,9 +92,12 @@ const page = () => {
                   type="lastName"
                   name="lastName"
                   id="lastName"
+                  onChange={(e) =>
+                    setFormData({ ...formData, lastName: e.target.value })
+                  }
+                  value={formData.lastName}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="John"
-                  required
                 />
               </div>
               <div>
@@ -54,9 +111,12 @@ const page = () => {
                   type="email"
                   name="email"
                   id="email"
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  value={formData.email}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="name@company.com"
-                  required
                 />
               </div>
               <div>
@@ -70,9 +130,12 @@ const page = () => {
                   type="password"
                   name="password"
                   id="password"
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                  value={formData.password}
                   placeholder="••••••••"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  required
                 />
               </div>
 
