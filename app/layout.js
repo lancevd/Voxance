@@ -12,9 +12,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="" data-theme="dark">
+      <body className="bg-gray-50 dark:bg-gray-900">
         <AuthProvider>
-          <NavBarWrapper/>
+          <NavBarWrapper />
           <Toaster />
           {children}
         </AuthProvider>

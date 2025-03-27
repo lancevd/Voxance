@@ -4,6 +4,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { FaBell, FaRocket, FaUserCircle } from "react-icons/fa";
 import { FaGear } from "react-icons/fa6";
+import ThemeToggle from "../ThemeToggle";
 
 const TopBar = () => {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
@@ -40,6 +41,8 @@ const TopBar = () => {
           </Link>
         </div>
         <div className="flex items-center lg:order-2 space-x-4">
+        {/* Theme toggle */}
+        <ThemeToggle />
           {/* Notifications */}
           <div className="relative inline-block">
             <button
