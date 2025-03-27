@@ -2,13 +2,21 @@
 
 import Feedback from "@/app/components/dashboard/Feedback";
 import PreviousLectures from "@/app/components/dashboard/PreviousLectures";
+import PromptModal from "@/app/components/dashboard/PromptModal";
 import { useAuth } from "@/app/context/authContext";
 import { ExpertsList } from "@/services/Options";
 import Image from "next/image";
+import { useState } from "react";
 
 // app/(dashboard)/page.jsx
 export default function DashboardPage() {
   const { user } = useAuth();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
 
   return (
     <main className="p-8 md:p-20 lg:p-48 xl:p-56">
@@ -20,6 +28,7 @@ export default function DashboardPage() {
         {ExpertsList.map((item, index) => (
           <div
             key={index}
+            onClick={openModal}
             className="size border dark:text-gray-50 dark:border-gray-50 flex flex-col gap-2 items-center p-2 cursor-pointer rounded-lg"
           >
             <Image
@@ -33,6 +42,7 @@ export default function DashboardPage() {
           </div>
         ))}
       </section>
+      <PromptModal isOpen={isModalOpen} onClose={closeModal} />
       <div className="h-8 md:h-12"></div>
       <section className="grid grid-cols-1 md:grid-cols-2 gap-4 justify-between">
         <PreviousLectures />
