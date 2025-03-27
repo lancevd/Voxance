@@ -2,7 +2,7 @@ import { Toaster } from "react-hot-toast";
 import NavBar from "./components/site/NavBar";
 import { AuthProvider } from "./context/authContext";
 import "./globals.css";
-import NavBarWrapper from "@/utils/NavbarWrapper";
+import NavBarWrapper from "@/app/components/site/NavbarWrapper";
 
 export const metadata = {
   title: "Voxance AI Agent",

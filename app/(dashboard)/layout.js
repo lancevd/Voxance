@@ -5,17 +5,15 @@ import { useAuth } from "../context/authContext";
 import { AuthProvider } from "../context/authContext";
 
 export default function DashboardLayout({ children }) {
-  const { checkUserLoggedIn, user } = useAuth();
+  const { checkUserLoggedIn } = useAuth();
 
   useEffect(() => {
     checkUserLoggedIn();
   }, []);
   return (
     <div className="dashboard-layout">
-      <AuthProvider>
         <TopBar />
         {children}
-      </AuthProvider>
     </div>
   );
 }
