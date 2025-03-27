@@ -10,7 +10,8 @@ const TopBar = () => {
   const [notificationDropdownOpen, setNotificationDropdownOpen] =
     useState(false);
 
-  const { user } = useAuth();
+  const { user,logout } = useAuth();
+
 
   const toggleUserDropdown = () => {
     setUserDropdownOpen((prev) => !prev);
@@ -34,7 +35,7 @@ const TopBar = () => {
         <div className="flex justify-start items-center">
           <Link href="/dashboard" className="flex mr-4">
             <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
-              Flowbite
+              Voxance
             </span>
           </Link>
         </div>
@@ -86,7 +87,7 @@ const TopBar = () => {
             >
               <span className="sr-only">Open user menu</span>
               <img
-                src={user?.profilePicture}
+                src={user ? user.profilePicture : "/"}
                 className="size-8 rounded-full"
                 alt="User"
               />
@@ -94,8 +95,8 @@ const TopBar = () => {
             {userDropdownOpen && (
               <div className="absolute right-0 mt-2 w-56 text-base bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600 z-50">
                 <div className="py-3 px-4">
-                  <span className="block text-sm font-semibold text-gray-900 dark:text-white">
-                    {user?.firstName} {user?.lastName}
+                  <span className="block text-sm font-semibold text-gray-900 dark:text-white"> 
+                    {user ? user.firstName : "firstname"} {user ? user.lastName : "lastname"}
                   </span>
                   <span className="block text-sm text-gray-500 truncate dark:text-gray-400">
                     {user?.status}
@@ -144,8 +145,8 @@ const TopBar = () => {
                 <ul className="py-1 text-gray-500 dark:text-gray-400">
                   <li>
                     <Link
-                      href="#"
-                      onClick={closeUserDropdown}
+                      href=""
+                      onClick={logout}
                       className="block py-2 px-4 text-sm text-red-400 hover:bg-gray-100 dark:hover:bg-gray-600 "
                     >
                       Sign out

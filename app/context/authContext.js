@@ -67,9 +67,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const logout = async () => {
+    try {
+      const response =  await axiosInstance.post('/auth/logout')
+      toast.success(response.data.message)
+      router.push('/login')
+    } catch (error) {
+      toast.error(error.response.data.message)
+    }
+  }
+
   return (
     <AuthContext.Provider
-      value={{ user, setUser, checkUserLoggedIn, register, login, loading }}
+      value={{ user, setUser, checkUserLoggedIn, register, login, loading,logout }}
     >
       {children}
     </AuthContext.Provider>
