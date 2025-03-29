@@ -11,12 +11,18 @@ import { useState } from "react";
 // app/(dashboard)/page.jsx
 export default function DashboardPage() {
   const { user } = useAuth();
-
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedExpert, setSelectedExpert] = useState(null);
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const openModal = (item) => {
+    setSelectedExpert(item);
+    setIsModalOpen(true);
+  };
 
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedExpert(null);
+  };
 
   return (
     <main className="p-8 md:p-20 lg:p-48 xl:p-56">
@@ -28,8 +34,8 @@ export default function DashboardPage() {
         {ExpertsList.map((item, index) => (
           <div
             key={index}
-            onClick={openModal}
-            className="size border dark:text-gray-50 dark:border-gray-50 flex flex-col gap-2 items-center p-2 cursor-pointer rounded-lg"
+            onClick={() => openModal(item)}
+            className="border dark:text-gray-50 dark:border-gray-50 flex flex-col gap-2 items-center p-2 cursor-pointer rounded-lg"
           >
             <Image
               src={item.icon}
@@ -42,7 +48,11 @@ export default function DashboardPage() {
           </div>
         ))}
       </section>
-      <PromptModal isOpen={isModalOpen} onClose={closeModal} />
+      <PromptModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        selectedExpert={selectedExpert}
+      />
       <div className="h-8 md:h-12"></div>
       <section className="grid grid-cols-1 md:grid-cols-2 gap-4 justify-between">
         <PreviousLectures />
