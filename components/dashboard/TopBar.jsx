@@ -1,5 +1,5 @@
 "use client";
-import { useAuth } from "@/app/context/authContext";
+import { useAuth } from "@/context/authContext";
 import Link from "next/link";
 import React, { useState } from "react";
 import { FaBell, FaRocket, FaUserCircle } from "react-icons/fa";
