@@ -3,7 +3,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { useAuth } from "../context/authContext";
 import toast from "react-hot-toast";
-import Spinner from "../components/Spinner";
+import Spinner from "../../components/Spinner";
 
 const page = () => {
   const [formData, setFormData] = useState({
@@ -31,7 +31,7 @@ const page = () => {
 
     const valid = validateForm();
     if (valid === true) {
-     login(formData);
+      login(formData);
     }
   };
 

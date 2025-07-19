@@ -11,8 +11,7 @@ const TopBar = () => {
   const [notificationDropdownOpen, setNotificationDropdownOpen] =
     useState(false);
 
-  const { user,logout } = useAuth();
-
+  const { user, logout } = useAuth();
 
   const toggleUserDropdown = () => {
     setUserDropdownOpen((prev) => !prev);
@@ -41,8 +40,8 @@ const TopBar = () => {
           </Link>
         </div>
         <div className="flex items-center lg:order-2 space-x-4">
-        {/* Theme toggle */}
-        <ThemeToggle />
+          {/* Theme toggle */}
+          <ThemeToggle />
           {/* Notifications */}
           <div className="relative inline-block">
             <button
@@ -98,8 +97,9 @@ const TopBar = () => {
             {userDropdownOpen && (
               <div className="absolute right-0 mt-2 w-56 text-base bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600 z-50">
                 <div className="py-3 px-4">
-                  <span className="block text-sm font-semibold text-gray-900 dark:text-white"> 
-                    {user ? user.firstName : "firstname"} {user ? user.lastName : "lastname"}
+                  <span className="block text-sm font-semibold text-gray-900 dark:text-white">
+                    {user ? user.firstName : "firstname"}{" "}
+                    {user ? user.lastName : "lastname"}
                   </span>
                   <span className="block text-sm text-gray-500 truncate dark:text-gray-400">
                     {user?.status}

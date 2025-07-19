@@ -1,8 +1,8 @@
 "use client";
 
-import Feedback from "@/app/components/dashboard/Feedback";
-import PreviousLectures from "@/app/components/dashboard/PreviousLectures";
-import PromptModal from "@/app/components/dashboard/PromptModal";
+import Feedback from "@/components/dashboard/Feedback";
+import PreviousLectures from "@/components/dashboard/PreviousLectures";
+import PromptModal from "@/components/dashboard/PromptModal";
 import { useAuth } from "@/app/context/authContext";
 import { ExpertsList } from "@/services/Options";
 import Image from "next/image";

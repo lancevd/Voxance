@@ -1,5 +1,5 @@
 "use client";
-import NavBar from "@/app/components/site/NavBar";
+import NavBar from "@/components/site/NavBar";
 import { usePathname } from "next/navigation";
 
 const NavBarWrapper = () => {

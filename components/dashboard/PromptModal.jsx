@@ -13,7 +13,7 @@ export default function PromptModal({ isOpen, onClose, selectedExpert }) {
   const [prompt, setPrompt] = useState("");
   const [canNext, setCanNext] = useState(false);
   const modalRef = useRef(null);
-  const {showToast} = useToast();
+  const { showToast } = useToast();
 
   useEffect(() => {
     if (isOpen) {
@@ -34,10 +34,11 @@ export default function PromptModal({ isOpen, onClose, selectedExpert }) {
   function handleNext() {
     if (!canNext) {
       showToast(
-        "Ensure you select a tutor and enter at least 5 characters in the prompt", {type: "info"}
+        "Ensure you select a tutor and enter at least 5 characters in the prompt",
+        { type: "info" }
       );
     } else {
-      showToast("Next step triggered!", {type: "success"});
+      showToast("Next step triggered!", { type: "success" });
     }
   }
 
@@ -135,7 +136,7 @@ export default function PromptModal({ isOpen, onClose, selectedExpert }) {
           </button>
           <button
             className="w-full cursor-pointer flex items-center justify-center gap-2 py-3 rounded-lg bg-gray-700/80 hover:bg-gray-700 text-white font-semibold text-lg transition-all duration-200 shadow-md"
-            onClick={ handleNext}
+            onClick={handleNext}
             // disabled={!canNext}
             type="submit"
           >
