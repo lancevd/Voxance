@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import useToast from "../useToast";
+import { axiosInstance } from "@/utils/axios";
+import { useRouter } from "next/navigation";
 
 const tutors = [
   { name: "Kenny", img: "/images/tutor-1-min.png" },
@@ -8,19 +10,20 @@ const tutors = [
   { name: "Dame", img: "/images/tutor-3-min.png" },
 ];
 
-export default function PromptModal({ isOpen, onClose, selectedExpert }) {
+export default function PromptModal({ isOpen, onClose, selectedOption }) {
   const [selectedTutor, setSelectedTutor] = useState(null);
   const [prompt, setPrompt] = useState("");
   const [canNext, setCanNext] = useState(false);
   const modalRef = useRef(null);
   const { showToast } = useToast();
+  const router = useRouter();
 
   useEffect(() => {
     if (isOpen) {
       setSelectedTutor(null);
       setPrompt("");
     }
-  }, [isOpen, selectedExpert]);
+  }, [isOpen, selectedOption]);
 
   useEffect(() => {
     if (selectedTutor !== null && prompt.trim().length > 4) {
@@ -31,14 +34,30 @@ export default function PromptModal({ isOpen, onClose, selectedExpert }) {
   }, [selectedTutor, prompt]);
 
   // Next step
-  function handleNext() {
+  async function handleNext(e) {
+    e.preventDefault();
     if (!canNext) {
       showToast(
         "Ensure you select a tutor and enter at least 5 characters in the prompt",
         { type: "info" }
       );
     } else {
-      showToast("Next step triggered!", { type: "success" });
+      try {
+        const payload = {
+          coachingOption: selectedOption,
+          topic: prompt,
+          expertName: tutors[selectedTutor].name,
+        };
+        const response = await axiosInstance.post(`/discussion`, payload);
+        if (response.data) {
+          console.log(response);
+          showToast(response.data.message, { type: "success" });
+          router.push(`/dashboard/discussions/${response.data.data._id}`);
+        }
+      } catch (error) {
+        console.error("Error handling next step:", error);
+        showToast("An error occurred while proceeding", { type: "error" });
+      }
     }
   }
 
@@ -80,69 +99,75 @@ export default function PromptModal({ isOpen, onClose, selectedExpert }) {
           ×
         </button>
         <h2 className="text-xl md:text-2xl font-semibold text-white mb-4">
-          Create prompt for {selectedExpert?.name || "Session"}
+          Create prompt for {selectedOption?.name || "Session"}
         </h2>
         <hr className="border-gray-700 mb-4" />
-        <div className="mb-4">
-          <label className="block text-gray-300 font-medium mb-2">Prompt</label>
-          <textarea
-            className="w-full min-h-[100px] rounded-lg bg-gray-700 text-gray-100 p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
-            placeholder="Write your prompt here..."
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-          />
-        </div>
-        <div className="mb-6">
-          <label className="block text-gray-300 font-medium mb-2">
-            Choose Your Tutor
-          </label>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {tutors.map((tutor, idx) => (
-              <label
-                key={tutor.name}
-                className={`flex flex-col items-center p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 bg-gray-700/80 hover:border-primary-500 ${
-                  selectedTutor === idx
-                    ? "border-white shadow-lg scale-105"
-                    : "border-gray-600"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="tutor"
-                  className="hidden"
-                  checked={selectedTutor === idx}
-                  onChange={() => setSelectedTutor(idx)}
-                />
-                <Image
-                  src={tutor.img}
-                  alt={tutor.name}
-                  width={90}
-                  height={90}
-                  className="rounded-full w-full object-cover mb-2 border-2 border-gray-500"
-                />
-                <span className="text-gray-100 font-medium">{tutor.name}</span>
-              </label>
-            ))}
+        <form onSubmit={handleNext} method="post">
+          <div className="mb-4">
+            <label className="block text-gray-300 font-medium mb-2">
+              Prompt
+            </label>
+            <textarea
+              className="w-full min-h-[100px] rounded-lg bg-gray-700 text-gray-100 p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
+              placeholder="Write your prompt here..."
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+            />
           </div>
-        </div>
-        <div className="flex gap-4 justify-end">
-          <button
-            className="w-full cursor-pointer flex items-center justify-center gap-2 py-3 rounded-lg bg-gray-800/80 hover:bg-gray-700 text-white font-semibold text-lg transition-all duration-200 shadow-md"
-            onClick={() => {
-              /* handle submit here */
-            }}
-          >
-            Cancel
-          </button>
-          <button
-            className="w-full cursor-pointer flex items-center justify-center gap-2 py-3 rounded-lg bg-gray-700/80 hover:bg-gray-700 text-white font-semibold text-lg transition-all duration-200 shadow-md"
-            onClick={handleNext}
-            // disabled={!canNext}
-            type="submit"
-          >
-            Next
-          </button>
-        </div>
+          <div className="mb-6">
+            <label className="block text-gray-300 font-medium mb-2">
+              Choose Your Tutor
+            </label>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {tutors.map((tutor, idx) => (
+                <label
+                  key={tutor.name}
+                  className={`flex flex-col items-center p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 bg-gray-700/80 hover:border-primary-500 ${
+                    selectedTutor === idx
+                      ? "border-white shadow-lg scale-105"
+                      : "border-gray-600"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="tutor"
+                    className="hidden"
+                    checked={selectedTutor === idx}
+                    onChange={() => setSelectedTutor(idx)}
+                  />
+                  <Image
+                    src={tutor.img}
+                    alt={tutor.name}
+                    width={90}
+                    height={90}
+                    className="rounded-full w-full object-cover mb-2 border-2 border-gray-500"
+                  />
+                  <span className="text-gray-100 font-medium">
+                    {tutor.name}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+          <div className="flex gap-4 justify-end">
+            <button
+              className="w-full cursor-pointer flex items-center justify-center gap-2 py-3 rounded-lg bg-gray-800/80 hover:bg-gray-700 text-white font-semibold text-lg transition-all duration-200 shadow-md"
+              type="button"
+              onClick={() => {
+                onClose();
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              className="w-full cursor-pointer flex items-center justify-center gap-2 py-3 rounded-lg bg-gray-700/80 hover:bg-gray-700 text-white font-semibold text-lg transition-all duration-200 shadow-md"
+              // onClick={handleNext}
+              type="submit"
+            >
+              Next
+            </button>
+          </div>
+        </form>
       </div>
       {/* Animations */}
       <style jsx>{`

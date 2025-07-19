@@ -15,7 +15,7 @@ export default function DashboardPage() {
   const [selectedExpert, setSelectedExpert] = useState(null);
 
   const openModal = (item) => {
-    setSelectedExpert(item);
+    setSelectedExpert(item.name);
     setIsModalOpen(true);
   };
 
@@ -51,7 +51,7 @@ export default function DashboardPage() {
       <PromptModal
         isOpen={isModalOpen}
         onClose={closeModal}
-        selectedExpert={selectedExpert}
+        selectedOption={selectedExpert}
       />
       <div className="h-8 md:h-12"></div>
       <section className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 justify-between">
