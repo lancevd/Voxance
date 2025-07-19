@@ -2,7 +2,7 @@ import React from 'react'
 
 const PreviousLectures = () => {
   return (
-    <section>
+    <section className="bg-gray-800 p-4 rounded-lg">
       <h2 className="text-xl font-semibold md:text-2xl xl:text-3xl dark:text-white">
         Previous Sessions
       </h2>

@@ -25,7 +25,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <main className="p-8 md:p-20 lg:p-48 xl:p-56">
+    <main className="p-8 md:w-4/5 mx-auto">
       <h1 className="font-bold dark:text-gray-50 text-2xl md:text-3xl lg:text-4xl">
         Welcome Back, <br /> {user ? user.firstName : ""}
       </h1>
@@ -54,7 +54,7 @@ export default function DashboardPage() {
         selectedExpert={selectedExpert}
       />
       <div className="h-8 md:h-12"></div>
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-4 justify-between">
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 justify-between">
         <PreviousLectures />
         <Feedback />
       </section>
