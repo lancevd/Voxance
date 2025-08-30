@@ -46,7 +46,6 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (data) => {
     setLoading(true);
-    console.log(data);
     try {
       const response = await axiosInstance.post("/auth/login", data);
       if (!response.data)
