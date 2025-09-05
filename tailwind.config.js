@@ -1,16 +1,14 @@
-import flowbite from "flowbite-react/tailwind";
-import colors from "tailwindcss/colors";
-
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: "class",
-  content: ["./app/**/*.{js,ts,jsx,tsx,mdx}", flowbite.content()],
+  content: [
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  darkMode: "class", // Enable class-based dark mode
   theme: {
-    extend: {
-      colors: {
-        primary: colors.indigo,
-      },
-    },
+    extend: {},
   },
-  plugins: [flowbite.plugin()],
+  plugins: [],
 };

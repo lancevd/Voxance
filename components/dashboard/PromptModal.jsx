@@ -5,9 +5,9 @@ import { axiosInstance } from "@/utils/axios";
 import { useRouter } from "next/navigation";
 
 const tutors = [
-  { name: "Kenny", img: "/images/tutor-1-min.png" },
-  { name: "Abigail", img: "/images/tutor-2-min.png" },
-  { name: "Dame", img: "/images/tutor-3-min.png" },
+  { name: "Kenny", img: "/images/Kenny.png" },
+  { name: "Abigail", img: "/images/Abigail.png" },
+  { name: "Queen", img: "/images/Queen.png" },
 ];
 
 export default function PromptModal({ isOpen, onClose, selectedOption }) {
