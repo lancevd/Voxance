@@ -1,20 +1,25 @@
 "use client";
 import Spinner from "@/components/Spinner";
 import { useAuth } from "@/context/authContext";
+import { getToken } from "@/services/GlobalServices";
 import { axiosInstance } from "@/utils/axios";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
+import { RealtimeTranscriber } from "assemblyai";
 // import RecordRTC from "recordrtc";
 
 const Page = () => {
   const { id } = useParams(); // Destructure the id from the params object
   const [discussion, setDiscussion] = useState(null);
   const [connected, setConnected] = useState(false);
+  const [transcribe, setTranscribe] = useState();
   const { user } = useAuth();
   const recorder = useRef(null);
+  const realtimeTranscriber = useRef(null);
   let silenceTimeout;
+  let texts = {};
 
   async function fetchDiscussion() {
     try {
@@ -32,6 +37,26 @@ const Page = () => {
   }, [id]);
 
   async function connectToServer() {
+    // Initialize Assembly AI
+    realtimeTranscriber.current = new RealtimeTranscriber({
+      token: await getToken(),
+      sample_rate: 16_000,
+    })
+
+    realtimeTranscriber.current.on("transcript", async (transcript) => {
+      console.log(transcript)
+      texts[transcript.audio_start] = transcript?.text;
+      const keys = Object.keys(texts);
+      keys.sort((a,b) => a-b);
+      for ( const key of keys){
+        if (texts[key]) {
+          msgs +=`${texts[key]}`
+        }
+      }
+      setTranscribe(msg);
+    })
+    await realtimeTranscriber.current.connect();
+
     if (typeof window === "undefined") return;
     try {
       const { default: RecordRTC, StereoAudioRecorder } = await import(
@@ -49,9 +74,11 @@ const Page = () => {
         timeSlice: 250,
         audioBitsPerSecond: 64000,
         ondataavailable: async (blob) => {
+          if (!realtimeTranscriber.current) return;
           console.log("Audio blob available:", blob);
           clearTimeout(silenceTimeout);
           const buffer = await blob.arrayBuffer();
+          realtimeTranscriber.current.sendAudio(buffer);
           silenceTimeout = setTimeout(() => {
             console.log("Silence detected, stopping recording.");
           }, 2000);
@@ -65,8 +92,9 @@ const Page = () => {
     }
   }
 
-  function disconnect() {
+  async function disconnect() {
     setConnected(false);
+    await realtimeTranscriber.current.close();
     recorder.current.pauseRecording();
     recorder.current = null;
   }
