@@ -41,20 +41,20 @@ const Page = () => {
     realtimeTranscriber.current = new RealtimeTranscriber({
       token: await getToken(),
       sample_rate: 16_000,
-    })
+    });
 
     realtimeTranscriber.current.on("transcript", async (transcript) => {
-      console.log(transcript)
+      console.log(transcript);
       texts[transcript.audio_start] = transcript?.text;
       const keys = Object.keys(texts);
-      keys.sort((a,b) => a-b);
-      for ( const key of keys){
+      keys.sort((a, b) => a - b);
+      for (const key of keys) {
         if (texts[key]) {
-          msgs +=`${texts[key]}`
+          msgs += `${texts[key]}`;
         }
       }
       setTranscribe(msg);
-    })
+    });
     await realtimeTranscriber.current.connect();
 
     if (typeof window === "undefined") return;
@@ -63,10 +63,10 @@ const Page = () => {
         "recordrtc"
       );
 
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
       recorder.current = new RecordRTC(stream, {
         type: "audio",
-        mimeType: "audio/webm",
+        mimeType: "audio/webm;codecs=pcm",
         recorderType: StereoAudioRecorder,
         desiredSampRate: 16000,
         numberOfAudioChannels: 1,
@@ -85,7 +85,7 @@ const Page = () => {
           setConnected(true);
         },
       });
-
+    })
       recorder.current.startRecording();
     } catch (error) {
       console.error("Error accessing microphone:", error);
@@ -155,7 +155,10 @@ const Page = () => {
           </div>
           <div className="w-full">
             <div className="rounded-lg h-full md:rounded-3xl bg-gray-800 p-2 md:p-4">
-              Chat
+              <h4>Live Chat</h4>
+              <div className="flex-1 overflow-y-auto bg-gray-900 p-3 rounded text-gray-200 text-sm">
+                {transcribe || "Transcription will appear here..."}
+              </div>
             </div>
             <p className="text-sm text-center mt-4 text-gray-100">
               We will generate a feedback at the end of your conversation.
