@@ -73,19 +73,18 @@ const Page = () => {
       });
 
       realtimeTranscriber.current.on("turn", (turn) => {
-        if (turn.transcript) {
-          console.log("Turn:", turn);
-          setTranscribe((prev) => (prev || "") + " " + turn.transcript);
+        if (!turn || !turn.transcript) return;
+
+        if (turn.turn_is_formatted === true) {
+          const finalText = turn.transcript; 
+          setTranscribe((prev) => (prev ? `${prev} ${finalText}` : finalText));
+          console.log("Final (formatted) turn received:", finalText);
+        } else {
+          // ignore partial / unformatted final here (they arrive earlier)
+          console.log("Ignored turn (not formatted yet):", turn);
         }
       });
 
-      // realtimeTranscriber.current.on("transcript", (transcript) => {
-      //   if (transcript.text && transcript.text.trim()) {
-      //     console.log("Transcript:", transcript.text);
-      //     // For real-time partial transcripts
-      //     setTranscribe(transcript.text);
-      //   }
-      // });
 
       console.log("Transcriber created:", realtimeTranscriber.current);
 
