@@ -9,7 +9,7 @@ export async function GET(request) {
   try {
     // Use the new Universal-Streaming API to create temporary token
     const token = await assembly.streaming.createTemporaryToken({
-      expires_in_seconds: 600, // Token expires in 1 hour
+      expires_in_seconds: 600, 
     });
     return NextResponse.json(token);
   } catch (error) {
