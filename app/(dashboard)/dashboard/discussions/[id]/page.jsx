@@ -1,7 +1,7 @@
 "use client";
 import Spinner from "@/components/Spinner";
 import { useAuth } from "@/context/authContext";
-import { getToken } from "@/services/GlobalServices";
+import { AIModel, getToken } from "@/services/GlobalServices";
 import { axiosInstance } from "@/utils/axios";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -26,7 +26,7 @@ const Page = () => {
       const response = await axiosInstance.get(`/discussion/${id}`);
       if (response.data) {
         setDiscussion(response.data.item);
-        // console.log("Fetched discussion:", response.data.item);
+        console.log("Fetched discussion:", response.data.item);
       }
     } catch (error) {
       console.error("Error fetching discussion:", error);
@@ -43,7 +43,7 @@ const Page = () => {
 
       // Get API key from your backend
       const fetchedToken = await getToken();
-      console.log("The TOKEN is:", fetchedToken);
+      // console.log("The TOKEN is:", fetchedToken);
 
       const client = new AssemblyAI({
         // apiKey: fetchedToken,
@@ -58,7 +58,6 @@ const Page = () => {
 
       // Set up event listeners
       realtimeTranscriber.current.on("open", ({ sessionId }) => {
-        setIsConnecting(false);
         setConnected(true);
       });
 
@@ -71,7 +70,7 @@ const Page = () => {
         setConnected(false);
       });
 
-      realtimeTranscriber.current.on("turn", (turn) => {
+      realtimeTranscriber.current.on("turn", async (turn) => {
         if (!turn || !turn.transcript) return;
 
         if (turn.turn_is_formatted === true) {
@@ -83,15 +82,15 @@ const Page = () => {
               content: finalText,
             },
           ]);
-          console.log("Final (formatted) turn received:", finalText);
+
+          // Calling AI Model
+          const aiResp = await AIModel(discussion.topic,discussion.coachingOption,finalText)
+
         } else {
           // ignore partial / unformatted final here (they arrive earlier)
           console.log("Ignored turn (not formatted yet):", turn);
         }
       });
-
-      console.log("Transcriber created:", realtimeTranscriber.current);
-
       // Connect to the streaming service
       await realtimeTranscriber.current.connect();
       console.log("Connected to AssemblyAI streaming service");
@@ -108,7 +107,7 @@ const Page = () => {
     if (typeof window === "undefined") return;
 
     try {
-      console.log("Starting audio recording...");
+      // console.log("Starting audio recording...");
 
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
@@ -158,6 +157,7 @@ const Page = () => {
       });
 
       recorder.current.startRecording();
+      setIsConnecting(false);
       console.log("Recording started successfully!");
     } catch (error) {
       console.error("Error accessing microphone:", error);

@@ -16,16 +16,17 @@ async function getAPIKey() {
 }
 
 const openai = new OpenAI({
-  apiKey: getAPIKey(),
+  apiKey: process.env.NEXT_PUBLIC_OPENROUTER_API_KEY,
   baseURL: "https://openrouter.ai/api/v1",
   dangerouslyAllowBrowser: true,
 });
 
-export const AIModel = async (topic, coachingExpert, msg) => {
+export const AIModel = async (topic, coachingOption, msg) => {
   const option = CoachingOptions.find(
-    (option) => option.name === coachingExpert
+    (option) => option.name === coachingOption
   );
   const PROMPT = option.prompt.replace("{user_topic}", topic);
+  console.log(PROMPT);
 
   const completion = await openai.chat.completions.create({
     model: `google/gemini-2.0-flash-exp:free`,
