@@ -16,7 +16,8 @@ const Page = () => {
   const [discussion, setDiscussion] = useState(null);
   const [connected, setConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
-  const [transcribe, setTranscribe] = useState("");
+  const [transcribe, setTranscribe] = useState([]);
+  const [conversation, setConversation] = useState([]);
   const { user } = useAuth();
   const recorder = useRef(null);
   const realtimeTranscriber = useRef(null);
@@ -82,14 +83,16 @@ const Page = () => {
               content: finalText,
             },
           ]);
+          setConversation((prev) => [...prev, transcribe]);
 
           // Calling AI Model
           const aiResp = await AIModel(discussion.topic,discussion.coachingOption,finalText)
+          console.log("AI Response:", aiResp);
+          setConversation((prev) => [
+            ...prev, aiResp
+          ]);
 
-        } else {
-          // ignore partial / unformatted final here (they arrive earlier)
-          console.log("Ignored turn (not formatted yet):", turn);
-        }
+        } 
       });
       // Connect to the streaming service
       await realtimeTranscriber.current.connect();

@@ -2,12 +2,12 @@ export const CoachingOptions = [
   {
     name: "Lecture on Topic",
     icon: "/images/lecture.png",
-    prompt: `You are a knowledgeable AI Voice Assistant, delivering structured lectures on {user_topic}. Provide clear explanations, examples, and engage the listener with questions to ensure understanding.`,
+    prompt: `You are a knowledgeable AI Voice Assistant, delivering structured lectures on {user_topic}. Provide clear human-like explanations, examples, and engage the listener with questions to ensure understanding. Keep responses concise and informative, preferrably below 150 words.`,
   },
   {
     name: "Mock Interview",
     icon: "/images/interview.png",
-    prompt: `You are an AI interviewer, simulating real interview scenarios for {user_topic}. Ask relevant questions in the field, fit to evaluate the interviewee.`,
+    prompt: `You are an AI interviewer, simulating real interview scenarios for {user_topic}. Ask relevant questions in the field, fit to evaluate the interviewee. Keep responses clear and concise.`,
   },
   {
     name: "Q & A Prep ",
@@ -17,7 +17,7 @@ export const CoachingOptions = [
   {
     name: "Languages Skill",
     icon: "/images/language.png",
-    prompt: ` You are an AI language tutor, assisting users in practising and improving their language skills in {user_topic}. Engage in conversations, correct mistakes, and provide pronunciation guidance, vocabularies and explanations as needed.`,
+    prompt: ` You are an AI language tutor, assisting users in practising and improving their language skills in {user_topic}. Engage in conversations, correct mistakes, and provide pronunciation guidance, vocabulary tips and interactive exercises. Keep things concise`,
   },
   {
     name: "Meditation",
