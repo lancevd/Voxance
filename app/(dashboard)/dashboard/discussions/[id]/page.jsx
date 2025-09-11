@@ -21,13 +21,12 @@ const Page = () => {
   const recorder = useRef(null);
   const realtimeTranscriber = useRef(null);
   const silenceTimeoutRef = useRef(null);
-
   async function fetchDiscussion() {
     try {
       const response = await axiosInstance.get(`/discussion/${id}`);
       if (response.data) {
         setDiscussion(response.data.item);
-        console.log("Fetched discussion:", response.data.item);
+        // console.log("Fetched discussion:", response.data.item);
       }
     } catch (error) {
       console.error("Error fetching discussion:", error);
@@ -76,15 +75,20 @@ const Page = () => {
         if (!turn || !turn.transcript) return;
 
         if (turn.turn_is_formatted === true) {
-          const finalText = turn.transcript; 
-          setTranscribe((prev) => (prev ? `${prev} ${finalText}` : finalText));
+          const finalText = turn.transcript;
+          setTranscribe((prev) => [
+            ...prev,
+            {
+              role: "user",
+              content: finalText,
+            },
+          ]);
           console.log("Final (formatted) turn received:", finalText);
         } else {
           // ignore partial / unformatted final here (they arrive earlier)
           console.log("Ignored turn (not formatted yet):", turn);
         }
       });
-
 
       console.log("Transcriber created:", realtimeTranscriber.current);
 
@@ -127,7 +131,7 @@ const Page = () => {
         ondataavailable: async (blob) => {
           if (!realtimeTranscriber.current) return;
 
-          console.log("Audio blob available:", blob);
+          // console.log("Audio blob available:", blob);
 
           // Clear existing silence timeout
           if (silenceTimeoutRef.current) {
@@ -238,10 +242,47 @@ const Page = () => {
             </div>
           </div>
           <div className="w-full">
-            <div className="rounded-lg h-full md:rounded-3xl bg-gray-800 overflow-y-auto p-2 md:p-4 flex flex-col">
+            <div className="rounded-lg h-full md:rounded-3xl bg-gray-800 p-2 md:p-4 flex flex-col">
               <h4 className="mb-4">Live Chat</h4>
-              <div className="flex-1 overflow-y-scroll bg-gray-900 h-full p-3 rounded text-gray-200 text-sm">
-                {transcribe || "Transcription will appear here..."}
+              <div className="overflow-y-scroll bg-gray-900 p-3 rounded text-gray-200 text-sm h-64">
+                {transcribe.length > 0 ? (
+                  transcribe.map((item, index) => (
+                    <p key={index} className="">
+                      {item.content}
+                    </p>
+                  ))
+                ) : (
+                  <p className="">
+                    Lorem ipsum dolor sit amet consectetur, adipisicing elit.
+                    Voluptate asperiores placeat saepe dolore rerum deleniti eum
+                    id nobis aliquid officia totam fugit atque laborum eius sed
+                    sunt sequi soluta ratione quis laudantium fugiat iure, odit
+                    unde? Libero minima molestiae perferendis obcaecati, earum
+                    alias at aliquid voluptas maiores unde accusamus dolorum
+                    repellat ipsum. Dignissimos velit vero asperiores
+                    consectetur amet libero enim nisi molestiae? Quidem pariatur
+                    nesciunt totam ipsam magni eligendi, quibusdam similique,
+                    repellendus modi nobis quasi perferendis cum expedita
+                    tempora recusandae, sapiente inventore consectetur excepturi
+                    eos numquam molestias? Repellendus, eaque quam magnam
+                    pariatur earum molestias officia deleniti repellat.
+                    Nesciunt, doloremque quidem? <br /> Lorem ipsum dolor sit
+                    amet consectetur, adipisicing elit. Voluptate asperiores
+                    placeat saepe dolore rerum deleniti eum id nobis aliquid
+                    officia totam fugit atque laborum eius sed sunt sequi soluta
+                    ratione quis laudantium fugiat iure, odit unde? Libero
+                    minima molestiae perferendis obcaecati, earum alias at
+                    aliquid voluptas maiores unde accusamus dolorum repellat
+                    ipsum. Dignissimos velit vero asperiores consectetur amet
+                    libero enim nisi molestiae? Quidem pariatur nesciunt totam
+                    ipsam magni eligendi, quibusdam similique, repellendus modi
+                    nobis quasi perferendis cum expedita tempora recusandae,
+                    sapiente inventore consectetur excepturi eos numquam
+                    molestias? Repellendus, eaque quam magnam pariatur earum
+                    molestias officia deleniti repellat. Nesciunt, doloremque
+                    quidem?{" "}
+                  </p>
+                )}
               </div>
             </div>
             <p className="text-sm text-center mt-4 text-gray-100">

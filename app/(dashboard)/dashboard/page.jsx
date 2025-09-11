@@ -4,7 +4,7 @@ import Feedback from "@/components/dashboard/Feedback";
 import PreviousLectures from "@/components/dashboard/PreviousLectures";
 import PromptModal from "@/components/dashboard/PromptModal";
 import { useAuth } from "@/context/authContext";
-import { ExpertsList } from "@/services/Options";
+import { CoachingOptions } from "@/services/Options";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -31,7 +31,7 @@ export default function DashboardPage() {
       </h1>
       <br />
       <section className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 items-center justify-space-between">
-        {ExpertsList.map((item, index) => (
+        {CoachingOptions.map((item, index) => (
           <div
             key={index}
             onClick={() => openModal(item)}
