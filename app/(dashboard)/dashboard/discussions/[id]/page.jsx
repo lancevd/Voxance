@@ -10,6 +10,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { AssemblyAI } from "assemblyai";
 import RecordRTC from "recordrtc";
 import toast from "react-hot-toast";
+import ChatBox from "@/components/dashboard/ChatBox";
 
 const Page = () => {
   const { id } = useParams();
@@ -17,17 +18,29 @@ const Page = () => {
   const [connected, setConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [transcribe, setTranscribe] = useState([]);
-  const [conversation, setConversation] = useState([]);
+  const [conversation, setConversation] = useState([
+    {
+      role: "system",
+      content: "What can I do for you",
+    },
+    {
+      role: "user",
+      content: "Help me.",
+    },
+  ]);
   const { user } = useAuth();
   const recorder = useRef(null);
   const realtimeTranscriber = useRef(null);
   const silenceTimeoutRef = useRef(null);
+  // 🔥 ADDED: Rate limiting state
+  const [rateLimitTimeout, setRateLimitTimeout] = useState(null);
+
   async function fetchDiscussion() {
     try {
       const response = await axiosInstance.get(`/discussion/${id}`);
       if (response.data) {
         setDiscussion(response.data.item);
-        console.log("Fetched discussion:", response.data.item);
+        // console.log("Fetched discussion:", response.data.item);
       }
     } catch (error) {
       console.error("Error fetching discussion:", error);
@@ -76,23 +89,63 @@ const Page = () => {
 
         if (turn.turn_is_formatted === true) {
           const finalText = turn.transcript;
-          setTranscribe((prev) => [
-            ...prev,
-            {
-              role: "user",
-              content: finalText,
-            },
-          ]);
-          setConversation((prev) => [...prev, transcribe]);
 
-          // Calling AI Model
-          const aiResp = await AIModel(discussion.topic,discussion.coachingOption,finalText)
-          console.log("AI Response:", aiResp);
-          setConversation((prev) => [
-            ...prev, aiResp
-          ]);
+          // 🔥 CHANGED: Fix the transcribe state update and conversation flow
+          const userMessage = {
+            role: "user",
+            content: finalText,
+          };
 
-        } 
+          // Add user message to conversation immediately
+          setConversation((prev) => [...prev, userMessage]);
+
+          // 🔥 ADDED: Rate limiting check
+          if (rateLimitTimeout) {
+            console.log("Rate limited, skipping AI request");
+            const rateLimitMessage = {
+              role: "assistant",
+              content:
+                "Please wait a moment before sending another message due to rate limiting.",
+            };
+            setConversation((prev) => [...prev, rateLimitMessage]);
+            return;
+          }
+
+          try {
+            // Calling AI Model
+            const aiResp = await AIModel(
+              discussion.topic,
+              discussion.coachingOption,
+              finalText
+            );
+            console.log("AI Response:", aiResp);
+            setConversation((prev) => [...prev, aiResp]);
+          } catch (error) {
+            console.error("AI Model Error:", error);
+
+            // 🔥 ADDED: Handle rate limit errors
+            if (error.message && error.message.includes("429")) {
+              const errorMessage = {
+                role: "assistant",
+                content:
+                  "I'm currently rate limited. Please wait a moment before continuing.",
+              };
+              setConversation((prev) => [...prev, errorMessage]);
+
+              // Set rate limit timeout for 60 seconds
+              setRateLimitTimeout(true);
+              setTimeout(() => {
+                setRateLimitTimeout(null);
+              }, 60000);
+            } else {
+              const errorMessage = {
+                role: "assistant",
+                content: "Sorry, I encountered an error. Please try again.",
+              };
+              setConversation((prev) => [...prev, errorMessage]);
+            }
+          }
+        }
       });
       // Connect to the streaming service
       await realtimeTranscriber.current.connect();
@@ -245,49 +298,7 @@ const Page = () => {
             </div>
           </div>
           <div className="w-full">
-            <div className="rounded-lg h-full md:rounded-3xl bg-gray-800 p-2 md:p-4 flex flex-col">
-              <h4 className="mb-4">Live Chat</h4>
-              <div className="overflow-y-scroll bg-gray-900 p-3 rounded text-gray-200 text-sm h-64">
-                {transcribe.length > 0 ? (
-                  transcribe.map((item, index) => (
-                    <p key={index} className="">
-                      {item.content}
-                    </p>
-                  ))
-                ) : (
-                  <p className="">
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-                    Voluptate asperiores placeat saepe dolore rerum deleniti eum
-                    id nobis aliquid officia totam fugit atque laborum eius sed
-                    sunt sequi soluta ratione quis laudantium fugiat iure, odit
-                    unde? Libero minima molestiae perferendis obcaecati, earum
-                    alias at aliquid voluptas maiores unde accusamus dolorum
-                    repellat ipsum. Dignissimos velit vero asperiores
-                    consectetur amet libero enim nisi molestiae? Quidem pariatur
-                    nesciunt totam ipsam magni eligendi, quibusdam similique,
-                    repellendus modi nobis quasi perferendis cum expedita
-                    tempora recusandae, sapiente inventore consectetur excepturi
-                    eos numquam molestias? Repellendus, eaque quam magnam
-                    pariatur earum molestias officia deleniti repellat.
-                    Nesciunt, doloremque quidem? <br /> Lorem ipsum dolor sit
-                    amet consectetur, adipisicing elit. Voluptate asperiores
-                    placeat saepe dolore rerum deleniti eum id nobis aliquid
-                    officia totam fugit atque laborum eius sed sunt sequi soluta
-                    ratione quis laudantium fugiat iure, odit unde? Libero
-                    minima molestiae perferendis obcaecati, earum alias at
-                    aliquid voluptas maiores unde accusamus dolorum repellat
-                    ipsum. Dignissimos velit vero asperiores consectetur amet
-                    libero enim nisi molestiae? Quidem pariatur nesciunt totam
-                    ipsam magni eligendi, quibusdam similique, repellendus modi
-                    nobis quasi perferendis cum expedita tempora recusandae,
-                    sapiente inventore consectetur excepturi eos numquam
-                    molestias? Repellendus, eaque quam magnam pariatur earum
-                    molestias officia deleniti repellat. Nesciunt, doloremque
-                    quidem?{" "}
-                  </p>
-                )}
-              </div>
-            </div>
+            <ChatBox conversation={conversation} />
             <p className="text-sm text-center mt-4 text-gray-100">
               We will generate a feedback at the end of your conversation.
             </p>

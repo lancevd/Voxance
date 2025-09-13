@@ -21,19 +21,56 @@ const openai = new OpenAI({
   dangerouslyAllowBrowser: true,
 });
 
+// 🔥 ADDED: Rate limiting variables
+let lastRequestTime = 0;
+const MIN_REQUEST_INTERVAL = 2000; // 2 seconds between requests
+
 export const AIModel = async (topic, coachingOption, msg) => {
+  // 🔥 ADDED: Simple rate limiting
+  const now = Date.now();
+  const timeSinceLastRequest = now - lastRequestTime;
+
+  if (timeSinceLastRequest < MIN_REQUEST_INTERVAL) {
+    const waitTime = MIN_REQUEST_INTERVAL - timeSinceLastRequest;
+    await new Promise((resolve) => setTimeout(resolve, waitTime));
+  }
+
   const option = CoachingOptions.find(
     (option) => option.name === coachingOption
   );
   const PROMPT = option.prompt.replace("{user_topic}", topic);
-  console.log(PROMPT);
+  //   console.log(PROMPT);
 
-  const completion = await openai.chat.completions.create({
-    model: `google/gemini-2.0-flash-exp:free`,
-    messages: [
-      { role: "system", content: PROMPT },
-      { role: "user", content: msg },
-    ],
-  });
-  console.log(completion.choices[0].message);
+  try {
+    lastRequestTime = Date.now(); // 🔥 ADDED: Update last request time
+
+    const completion = await openai.chat.completions.create({
+      model: `google/gemini-2.0-flash-exp:free`,
+      messages: [
+        { role: "system", content: PROMPT },
+        { role: "user", content: msg },
+      ],
+      // 🔥 ADDED: Additional parameters to help with rate limiting
+      max_tokens: 150, // Limit response length
+      temperature: 0.7,
+    });
+
+    return completion.choices[0].message;
+  } catch (error) {
+    console.error("AI Model Error:", error);
+
+    // 🔥 ADDED: Better error handling for rate limits
+    if (
+      error.status === 429 ||
+      error.message.includes("429") ||
+      error.message.includes("Too Many Requests")
+    ) {
+      throw new Error(
+        "429: Rate limit exceeded. Please wait before making another request."
+      );
+    }
+
+    // Re-throw other errors
+    throw error;
+  }
 };
